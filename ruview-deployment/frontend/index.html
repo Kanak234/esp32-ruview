@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RuView Edge WiFi CSI Spatial Intelligence & Local AI Assistant Dashboard">
+    <title>RuView Spatial Intelligence Dashboard</title>
+    <!-- Modern Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-theme">
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <div class="logo-icon">π</div>
+                <div class="brand-text">
+                    <h1>RuView</h1>
+                    <span>Spatial Intelligence</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu" role="navigation">
+                <button class="nav-item active" data-tab="dashboard" id="nav-dashboard">
+                    <span class="icon">📊</span>
+                    <span class="label">Spatial Map</span>
+                </button>
+                <button class="nav-item" data-tab="ai" id="nav-ai">
+                    <span class="icon">🤖</span>
+                    <span class="label">Local AI Assistant</span>
+                </button>
+                <button class="nav-item" data-tab="nodes" id="nav-nodes">
+                    <span class="icon">📡</span>
+                    <span class="label">ESP32 Nodes</span>
+                </button>
+                <button class="nav-item" data-tab="sensors" id="nav-sensors">
+                    <span class="icon">📈</span>
+                    <span class="label">CSI Signals</span>
+                </button>
+                <button class="nav-item" data-tab="vitals" id="nav-vitals">
+                    <span class="icon">🫀</span>
+                    <span class="label">Vital Signs</span>
+                </button>
+                <button class="nav-item" data-tab="ha" id="nav-ha">
+                    <span class="icon">🏡</span>
+                    <span class="label">Home Assistant</span>
+                </button>
+                <button class="nav-item" data-tab="logs" id="nav-logs">
+                    <span class="icon">📜</span>
+                    <span class="label">System Logs</span>
+                </button>
+                <button class="nav-item" data-tab="settings" id="nav-settings">
+                    <span class="icon">⚙️</span>
+                    <span class="label">Settings</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-badge" id="system-status-trigger" title="Click to view detailed system health">
+                    <span class="status-indicator online" id="global-status-dot"></span>
+                    <span class="status-label" id="global-status-label">LIVE SYSTEM</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header Bar -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h2 id="page-title">Live 2D Digital Spatial Map</h2>
+                    <p class="subtitle" id="page-subtitle">Real-time WiFi CSI presence & RF wave perturbation monitoring</p>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="mode-toggle-group">
+                        <button class="badge-button mode-live active" id="btn-mode-live">LIVE MODE</button>
+                        <button class="badge-button mode-demo" id="btn-mode-demo">DEMO MODE</button>
+                    </div>
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Tab 1: Live 2D Digital Spatial Map -->
+            <section class="tab-content active" id="tab-dashboard">
+                <!-- System Status Summary Bar -->
+                <div class="card-grid metrics-grid">
+                    <div class="metric-card glass-card">
+                        <div class="card-header">
+                            <span class="card-icon">👤</span>
+                            <span class="card-title">Presence & Occupancy</span>
+                        </div>
+                        <div class="metric-value" id="val-occupancy">0</div>
+                        <div class="metric-footer">
+                            <span class="status-pill active" id="pill-presence">NO MOTION</span>
+                            <span class="subtext" id="val-room-name">Living Room</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card glass-card">
+                        <div class="card-header">
+                            <span class="card-icon">🫁</span>
+                            <span class="card-title">Respiration Rate</span>
+                        </div>
+                        <div class="metric-value"><span id="val-breathing">--</span> <span class="unit">RPM</span></div>
+                        <div class="metric-footer">
+                            <span class="status-pill normal">Bandpass 0.1-0.5 Hz</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card glass-card">
+                        <div class="card-header">
+                            <span class="card-icon">💓</span>
+                            <span class="card-title">Heart Rate</span>
+                        </div>
+                        <div class="metric-value"><span id="val-heartrate">--</span> <span class="unit">BPM</span></div>
+                        <div class="metric-footer">
+                            <span class="status-pill normal">Zero-crossing 0.8-2.0 Hz</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card glass-card">
+                        <div class="card-header">
+                            <span class="card-icon">📡</span>
+                            <span class="card-title">Active ESP32 Nodes</span>
+                        </div>
+                        <div class="metric-value" id="val-nodes-count">0</div>
+                        <div class="metric-footer">
+                            <span class="subtext" id="val-csi-rate">0 pkt/s UDP stream</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2D Interactive Digital Spatial Map -->
+                <div class="glass-card map-card full-width-card" style="margin-bottom: 32px;">
+                    <div class="card-banner">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <h3>WiFi CSI 2D Digital Spatial Map</h3>
+                            <span class="status-pill active" id="map-status-pill">LIVE CSI STREAM</span>
+                        </div>
+                        <div class="map-controls">
+                            <button class="btn-secondary" id="btn-zoom-in" title="Zoom In">+</button>
+                            <button class="btn-secondary" id="btn-zoom-out" title="Zoom Out">-</button>
+                            <button class="btn-secondary" id="btn-reset-view">Reset View</button>
+                            <button class="btn-secondary" id="btn-fullscreen">Fullscreen</button>
+                            <button class="btn-primary" id="btn-map-calibrate">Calibrate Map</button>
+                        </div>
+                    </div>
+
+                    <!-- Map Layers Toggle Toolbar -->
+                    <div class="layers-toolbar">
+                        <label><input type="checkbox" id="chk-layer-nodes" checked> Nodes</label>
+                        <label><input type="checkbox" id="chk-layer-heatmap" checked> CSI Heatmap</label>
+                        <label><input type="checkbox" id="chk-layer-people" checked> People</label>
+                        <label><input type="checkbox" id="chk-layer-trails" checked> Trails</label>
+                        <label><input type="checkbox" id="chk-layer-zones" checked> Zones</label>
+                        <label><input type="checkbox" id="chk-layer-grid" checked> Grid</label>
+                    </div>
+
+                    <div class="canvas-container" id="map-canvas-container" style="min-height: 480px;">
+                        <canvas id="spatial-canvas" width="900" height="500"></canvas>
+                    </div>
+                </div>
+
+                <!-- Split View: Timeline & Honesty Panel -->
+                <div class="split-view">
+                    <!-- Live Event Timeline -->
+                    <div class="glass-card timeline-card">
+                        <div class="card-banner">
+                            <h3>Live Event Timeline</h3>
+                            <span class="badge highlight" id="event-count-badge">0 Events</span>
+                        </div>
+                        <div class="timeline-list" id="timeline-events-list">
+                            <div class="empty-feed">Awaiting live spatial events...</div>
+                        </div>
+                    </div>
+
+                    <!-- About Spatial Estimation Panel -->
+                    <div class="glass-card honesty-card">
+                        <h3>About WiFi CSI Spatial Estimation</h3>
+                        <p class="description-text" style="font-size: 13px; line-height: 1.6; margin-top: 10px;">
+                            RuView estimates spatial presence, movement, and vital signs by analyzing channel state information (CSI) radio perturbation patterns from ESP32 Wi-Fi subcarriers.
+                        </p>
+                        <ul style="font-size: 12px; margin-top: 12px; padding-left: 18px; color: var(--text-muted);">
+                            <li><strong>Edge-Only Privacy:</strong> 100% optical camera-free and cloud-free.</li>
+                            <li><strong>RF Scene Inference:</strong> Map displays spatial probability estimates.</li>
+                            <li><strong>Validation:</strong> DensePose model evaluated at 82.3% temporal accuracy.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 2: Local AI Assistant -->
+            <section class="tab-content" id="tab-ai">
+                <div class="glass-card full-width-card" style="margin-bottom: 24px;">
+                    <div class="card-banner">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <h3>Local RuView AI Reasoning Assistant</h3>
+                            <span class="status-pill active">● 100% LOCAL OLLAMA</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label for="ai-model-select" style="font-size: 12px; color: var(--text-muted);">Active Model:</label>
+                            <select id="ai-model-select" style="padding: 6px 12px; background: var(--bg-surface); color: var(--text-main); border: 1px solid var(--border-glass); border-radius: var(--radius-sm);">
+                                <option value="auto">Auto-Detect / Built-in Reasoner</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- AI Query Input Box -->
+                    <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                        <input type="text" id="ai-user-query" placeholder="Ask RuView AI about room status, safety, or activity..." style="flex: 1; padding: 12px 16px; background: var(--bg-surface); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-main); font-size: 14px;">
+                        <button class="btn-primary" id="btn-ask-ai">Ask RuView AI</button>
+                    </div>
+
+                    <!-- Quick Query Buttons -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 24px;">
+                        <button class="btn-secondary quick-ai-btn" data-query="What is currently happening in the living room?">What is happening?</button>
+                        <button class="btn-secondary quick-ai-btn" data-query="Are there any fall risks or abnormal movement patterns detected?">Check Fall Risk</button>
+                        <button class="btn-secondary quick-ai-btn" data-query="Summarize recent room activity and occupancy count.">Summarize Activity</button>
+                    </div>
+
+                    <!-- AI Response Display Box -->
+                    <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 20px; min-height: 180px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; color: var(--text-muted);">
+                            <span>AI Reasoning Output</span>
+                            <span id="ai-response-meta">Provider: Local Ollama / Gateway</span>
+                        </div>
+                        <div id="ai-response-text" style="font-size: 14px; line-height: 1.7; color: var(--text-main);">
+                            Click "Ask RuView AI" or choose a quick prompt to generate natural language reasoning over current structured WiFi CSI telemetry.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 3: ESP32 Nodes Management -->
+            <section class="tab-content" id="tab-nodes">
+                <div class="glass-card full-width-card">
+                    <div class="card-banner">
+                        <h3>Connected ESP32 Sensing Nodes</h3>
+                        <button class="btn-primary" id="btn-refresh-nodes">Scan Nodes</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-nodes">
+                            <thead>
+                                <tr>
+                                    <th>Node ID</th>
+                                    <th>Chip Model</th>
+                                    <th>Serial Port / IP</th>
+                                    <th>MAC Address</th>
+                                    <th>CSI Rate</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nodes-table-body">
+                                <tr>
+                                    <td colspan="6" class="text-center">Scanning for active USB serial ESP32 nodes...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 4: CSI Signals -->
+            <section class="tab-content" id="tab-sensors">
+                <div class="split-view">
+                    <div class="glass-card">
+                        <h3>Subcarrier Phase & Amplitude Variance</h3>
+                        <div class="chart-container">
+                            <canvas id="csi-phase-chart" width="500" height="250"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Signal-to-Noise Ratio (SNR) & RSSI</h3>
+                        <div class="chart-container">
+                            <canvas id="csi-snr-chart" width="500" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 5: Vital Signs -->
+            <section class="tab-content" id="tab-vitals">
+                <div class="split-view">
+                    <div class="glass-card">
+                        <h3>Respiration Rate Waveform (BPM)</h3>
+                        <div class="chart-container">
+                            <canvas id="resp-chart" width="500" height="250"></canvas>
+                        </div>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Heart Rate Waveform (BPM)</h3>
+                        <div class="chart-container">
+                            <canvas id="heart-chart" width="500" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 6: Home Assistant -->
+            <section class="tab-content" id="tab-ha">
+                <div class="glass-card full-width-card">
+                    <div class="card-banner">
+                        <h3>Home Assistant MQTT Discovery (HA-DISCO)</h3>
+                        <span class="badge positive">21 Entities Active</span>
+                    </div>
+                    <p class="description-text">
+                        RuView auto-publishes 21 discovery entities (11 raw signal metrics + 10 semantic states) to local Home Assistant via MQTT topic prefix <code>homeassistant/</code>.
+                    </p>
+                    <div class="entity-grid" id="ha-entities-grid">
+                        <!-- Entity list populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 7: System Logs -->
+            <section class="tab-content" id="tab-logs">
+                <div class="glass-card full-width-card">
+                    <div class="card-banner">
+                        <h3>Live RuView Sensing Server Logs</h3>
+                        <button class="btn-secondary" id="btn-clear-logs">Clear Logs</button>
+                    </div>
+                    <pre class="log-console" id="log-console-box">
+[SYSTEM] RuView Dashboard Initialized.
+[SYSTEM] Local AI Gateway: Connected to http://127.0.0.1:3002.
+                    </pre>
+                </div>
+            </section>
+
+            <!-- Tab 8: Settings -->
+            <section class="tab-content" id="tab-settings">
+                <div class="glass-card form-card">
+                    <h3>Connection & Configuration Settings</h3>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label for="cfg-backend-url">Backend REST API Address</label>
+                            <input type="text" id="cfg-backend-url" value="http://127.0.0.1:3000">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cfg-ws-url">WebSocket Feed Address</label>
+                            <input type="text" id="cfg-ws-url" value="ws://127.0.0.1:3001">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cfg-llm-gateway">Local LLM Gateway Address</label>
+                            <input type="text" id="cfg-llm-gateway" value="http://127.0.0.1:3002">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cfg-mqtt-host">MQTT Broker Host</label>
+                            <input type="text" id="cfg-mqtt-host" value="127.0.0.1:1883">
+                        </div>
+
+                        <button type="submit" class="btn-primary">Save Settings</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Map Calibration Modal -->
+    <div class="modal-overlay" id="calibration-modal">
+        <div class="modal-card glass-card">
+            <div class="modal-header">
+                <h3>Calibrate Room Map & Node Layout</h3>
+                <button class="modal-close" id="calib-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="calib-room-width">Room Physical Width (Meters)</label>
+                    <input type="number" step="0.5" id="calib-room-width" value="6.0">
+                </div>
+                <div class="form-group">
+                    <label for="calib-room-height">Room Physical Length (Meters)</label>
+                    <input type="number" step="0.5" id="calib-room-height" value="4.0">
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                    <button class="btn-secondary" id="btn-reset-calibration">Reset Defaults</button>
+                    <button class="btn-primary" id="btn-save-calibration">Save Calibration</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Health Modal Popup -->
+    <div class="modal-overlay" id="health-modal">
+        <div class="modal-card glass-card">
+            <div class="modal-header">
+                <h3>RuView System Health Matrix</h3>
+                <button class="modal-close" id="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-health-body">
+                <!-- Health Matrix Table -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/spatial_adapter.js"></script>
+    <script src="js/spatial_renderer.js"></script>
+    <script src="js/calibration.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

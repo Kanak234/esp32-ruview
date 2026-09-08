@@ -1,0 +1,36 @@
+{
+  "project": "RuView WiFi CSI Spatial Intelligence Platform",
+  "version": "2.1.0-release",
+  "timestamp": "2026-08-10T08:52:00Z",
+  "status": "validated",
+  "models": [
+    {
+      "name": "wifi-densepose-pretrained-4bit",
+      "repo_id": "ruvnet/wifi-densepose-pretrained",
+      "purpose": "Inference / WiFi CSI Spatial Estimation",
+      "format": "4-bit int4 quantized binary weights",
+      "local_path": "models/wifi-densepose-pretrained-4bit/model_quant_4bit.bin",
+      "required": true,
+      "status": "LOADED_AND_VALIDATED"
+    },
+    {
+      "name": "ollama-local-router",
+      "provider": "ollama",
+      "purpose": "Local LLM Natural Language Reasoning over RuView Context",
+      "gateway_endpoint": "http://127.0.0.1:3002",
+      "ollama_endpoint": "http://127.0.0.1:11434",
+      "gpu_acceleration": "NVIDIA GeForce RTX 3050 Laptop GPU (CUDA)",
+      "required": true,
+      "status": "ONLINE"
+    }
+  ],
+  "datasets": [
+    {
+      "name": "csi-validation-frames",
+      "purpose": "Automated CSI pipeline verification & unit testing",
+      "local_path": "datasets/validation/sample_csi_frames.json",
+      "required": true,
+      "status": "VALIDATED"
+    }
+  ]
+}

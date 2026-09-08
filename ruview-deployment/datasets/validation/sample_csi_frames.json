@@ -1,0 +1,14 @@
+{
+  "dataset": "csi-validation-frames",
+  "total_frames": 100,
+  "subcarriers": 64,
+  "sampling_rate_hz": 100,
+  "sample_frame": {
+    "node_id": "ESP32-S3-01",
+    "timestamp_us": 1723276800000000,
+    "rssi_dbm": -48,
+    "snr_db": 26.2,
+    "amplitude_std": 4.12,
+    "phase_variance": 0.082
+  }
+}

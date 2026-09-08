@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    container_name: ruview_mqtt
+    restart: always
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  ruview-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ruview_backend
+    restart: always
+    network_mode: "host"
+    depends_on:
+      - mqtt
+    environment:
+      - MQTT_BROKER_HOST=127.0.0.1
+      - MQTT_BROKER_PORT=1883
+      - MODEL_PATH=/app/models/wifi-densepose-pretrained-4bit
+      - DEVICE=cpu
+    volumes:
+      - ./models:/app/models
+      - /dev:/dev
+    privileged: true

@@ -1,0 +1,60 @@
+# Home Assistant Automations for RuView WiFi CSI Spatial Intelligence Platform
+# Local & Edge-Only Smart Home Integrations
+
+- id: 'ruview_someone_sleeping'
+  alias: 'RuView: Dim Lights & Set Night Mode When Sleeping'
+  description: 'Triggers when RuView inference model classifies spatial activity state as someone-sleeping'
+  trigger:
+    - platform: state
+      entity_id: sensor.ruview_spatial_activity_state
+      to: 'someone-sleeping'
+      for:
+        minutes: 2
+  condition:
+    - condition: time
+      after: '21:00:00'
+      before: '07:00:00'
+  action:
+    - service: light.turn_off
+      target:
+        area_id: bedroom
+    - service: climate.set_preset_mode
+      target:
+        entity_id: climate.bedroom_thermostat
+      data:
+        preset_mode: 'sleep'
+
+- id: 'ruview_fall_risk_alert'
+  alias: 'RuView: Emergency Local Notification on Elevated Fall Risk'
+  description: 'Triggers local acoustic alarm and emergency light flashes when RuView detects an elevated fall risk state'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.ruview_fall_risk_alert
+      to: 'on'
+  action:
+    - service: light.turn_on
+      target:
+        area_id: living_room
+      data:
+        rgb_color: [255, 0, 0]
+        brightness: 255
+        flash: short
+    - service: siren.turn_on
+      target:
+        entity_id: siren.local_hub_chime
+      data:
+        tone: 'emergency_fall_alert'
+
+- id: 'ruview_instant_presence_lighting'
+  alias: 'RuView: Sub-100ms Micro-Occupancy Lighting'
+  description: 'Ultra-low latency room illumination based on CSI Doppler presence detection'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.ruview_room_occupancy
+      to: 'on'
+  action:
+    - service: light.turn_on
+      target:
+        area_id: hallway
+      data:
+        brightness_pct: 80

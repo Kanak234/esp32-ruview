@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    container_name: ruview_mqtt
+    restart: always
+    ports:
+      - "127.0.0.1:1883:1883"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "1883"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  ruview-backend:
+    image: ruvnet/wifi-densepose:latest
+    container_name: ruview_backend
+    restart: always
+    network_mode: "host"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      mqtt:
+        condition: service_healthy
+    environment:
+      - MQTT_BROKER_HOST=127.0.0.1
+      - MQTT_BROKER_PORT=1883
+      - MODEL_PATH=/app/models/wifi-densepose-pretrained-4bit
+      - RUVIEW_LLM_ENABLED=true
+      - RUVIEW_OLLAMA_URL=http://host.docker.internal:11434
+      - RUVIEW_LLM_GATEWAY_URL=http://127.0.0.1:3002
+      - DEVICE=cpu
+    volumes:
+      - ./models:/app/models:rw
+      - /dev:/dev:ro
+    privileged: false
+
+  ruview-llm-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.llm-gateway
+    container_name: ruview_llm_gateway
+    restart: always
+    network_mode: "host"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - RUVIEW_OLLAMA_URL=http://host.docker.internal:11434
+      - RUVIEW_LLM_GATEWAY_PORT=3002
