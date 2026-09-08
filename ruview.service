@@ -1,0 +1,19 @@
+[Unit]
+Description=RuView WiFi CSI Spatial Sensing Service
+After=network-online.target docker.service mosquitto.service
+Wants=network-online.target
+Requires=mosquitto.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/kanak07/Desktop/esp32
+EnvironmentFile=/home/kanak07/Desktop/esp32/.env
+ExecStart=/home/kanak07/Desktop/esp32/setup-ruview.sh --start
+Restart=always
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

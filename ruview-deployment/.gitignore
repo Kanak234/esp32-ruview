@@ -1,0 +1,25 @@
+# Security & Secrets Ignore Policy
+.env
+*.env
+*.pem
+*.key
+*.crt
+credentials.json
+wifi_secrets.json
+
+# Build & Virtual Environments
+venv/
+__pycache__/
+*.pyc
+.install.log
+*.log
+backups/
+
+# Models & Large Checkpoints
+models/*
+!models/.gitkeep
+
+# Generated Dynamic Payloads
+ha_mqtt_discovery.json
+*.tmp
+*.bin
